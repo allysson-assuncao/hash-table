@@ -22,8 +22,7 @@ public class Main {
         System.out.println("PASSO 2: BUSCA LINEAR NO ARRAY ORIGINAL");
         long inicioBuscaLinear = System.nanoTime();
         boolean encontradoLinear = buscaLinear(arrayA, x);
-        long fimBuscaLinear = System.nanoTime();
-        long tempoBuscaLinear = fimBuscaLinear - inicioBuscaLinear;
+        long tempoBuscaLinear = System.nanoTime() - inicioBuscaLinear;
 
         System.out.println("Elemento X " + (encontradoLinear ? "encontrado." : "NÃO encontrado."));
         System.out.printf("Tempo de execução da busca linear: %d nanossegundos (%d microssegundos)\n\n",
@@ -35,13 +34,11 @@ public class Main {
 
         long inicioOrdenacao = System.nanoTime();
         Arrays.sort(arrayOrdenado);
-        long fimOrdenacao = System.nanoTime();
-        long tempoOrdenacao = fimOrdenacao - inicioOrdenacao;
+        long tempoOrdenacao = System.nanoTime() - inicioOrdenacao;
 
         long inicioBuscaBinaria = System.nanoTime();
         int indiceBinario = Arrays.binarySearch(arrayOrdenado, x);
-        long fimBuscaBinaria = System.nanoTime();
-        long tempoBuscaBinaria = fimBuscaBinaria - inicioBuscaBinaria;
+        long tempoBuscaBinaria = System.nanoTime() - inicioBuscaBinaria;
 
         System.out.println("Elemento X " + (indiceBinario >= 0 ? "encontrado." : "NÃO encontrado."));
         System.out.printf("Tempo de ordenação do array: %d nanossegundos (%d microssegundos)\n",
@@ -59,13 +56,11 @@ public class Main {
         for (int elemento : arrayA) {
             mapa.put(elemento, elemento);
         }
-        long fimCriacaoHash = System.nanoTime();
-        long tempoCriacaoHash = fimCriacaoHash - inicioCriacaoHash;
+        long tempoCriacaoHash = System.nanoTime() - inicioCriacaoHash;
 
         long inicioBuscaHash = System.nanoTime();
         boolean encontradoHash = mapa.containsKey(x);
-        long fimBuscaHash = System.nanoTime();
-        long tempoBuscaHash = fimBuscaHash - inicioBuscaHash;
+        long tempoBuscaHash = System.nanoTime() - inicioBuscaHash;
 
         System.out.println("Elemento X " + (encontradoHash ? "encontrado." : "NÃO encontrado."));
         System.out.printf("Tempo de inserção dos elementos na Tabela Hash: %d nanossegundos (%d microssegundos)\n",
