@@ -1,82 +1,64 @@
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 public class Main {
 
     public static void main(String[] args) {
-        int tamanhoArray = 1000;
-        long seed = 42L;
-        Random random = new Random(seed);
-        int[] arrayA = new int[tamanhoArray];
-        for (int i = 0; i < tamanhoArray; i++) {
-            // Gera números entre 0 e 1999 para ter chance de não encontrar o elemento
-            arrayA[i] = random.nextInt(tamanhoArray * 2);
+        final int NUM_ELEMENTS = 1_000_000;
+        final int MAX_VALUE = 10_000_000;
+
+        System.out.println("Gerando " + String.format("%,d", NUM_ELEMENTS) + " números aleatórios...");
+        int[] randomNumbers = new Random().ints(NUM_ELEMENTS, 1, MAX_VALUE).distinct().toArray();
+
+        final int actualElements = randomNumbers.length;
+        System.out.println("Dados gerados. Total de elementos únicos: " + String.format("%,d", actualElements));
+        System.out.println("------------------------------------------------------");
+
+        AVLTree avlTree = new AVLTree();
+        Map<Integer, Integer> hashMap = new HashMap<>();
+
+        System.out.println("\n--- Teste de Inserção ---");
+
+        long startTime = System.nanoTime();
+        for (int number : randomNumbers) {
+            avlTree.insert(number);
         }
+        long endTime = System.nanoTime();
+        long avlInsertionTime = (endTime - startTime) / 1_000_000;
+        System.out.println("Árvore AVL: " + avlInsertionTime + " ms para inserir " + String.format("%,d", actualElements) + " elementos.");
 
-        int x = arrayA[tamanhoArray - 100];
-
-        System.out.println("Iniciando análise com " + tamanhoArray + " elementos.");
-        System.out.println("Procurando pelo número X = " + x + "\n");
-        System.out.println("==========================================================");
-
-        System.out.println("PASSO 2: BUSCA LINEAR NO ARRAY ORIGINAL");
-        long inicioBuscaLinear = System.nanoTime();
-        boolean encontradoLinear = buscaLinear(arrayA, x);
-        long tempoBuscaLinear = System.nanoTime() - inicioBuscaLinear;
-
-        System.out.println("Elemento X " + (encontradoLinear ? "encontrado." : "NÃO encontrado."));
-        System.out.printf("Tempo de execução da busca linear: %d nanossegundos (%d microssegundos)\n\n",
-                tempoBuscaLinear, TimeUnit.NANOSECONDS.toMicros(tempoBuscaLinear));
-        System.out.println("==========================================================");
-
-        System.out.println("PASSO 3: BUSCA BINÁRIA NO ARRAY ORDENADO");
-        int[] arrayOrdenado = Arrays.copyOf(arrayA, arrayA.length);
-
-        long inicioOrdenacao = System.nanoTime();
-        Arrays.sort(arrayOrdenado);
-        long tempoOrdenacao = System.nanoTime() - inicioOrdenacao;
-
-        long inicioBuscaBinaria = System.nanoTime();
-        int indiceBinario = Arrays.binarySearch(arrayOrdenado, x);
-        long tempoBuscaBinaria = System.nanoTime() - inicioBuscaBinaria;
-
-        System.out.println("Elemento X " + (indiceBinario >= 0 ? "encontrado." : "NÃO encontrado."));
-        System.out.printf("Tempo de ordenação do array: %d nanossegundos (%d microssegundos)\n",
-                tempoOrdenacao, TimeUnit.NANOSECONDS.toMicros(tempoOrdenacao));
-        System.out.printf("Tempo de execução da busca binária: %d nanossegundos (%d microssegundos)\n",
-                tempoBuscaBinaria, TimeUnit.NANOSECONDS.toMicros(tempoBuscaBinaria));
-        System.out.printf("Tempo total (Ordenação + Busca): %d nanossegundos (%d microssegundos)\n\n",
-                (tempoOrdenacao + tempoBuscaBinaria), TimeUnit.NANOSECONDS.toMicros(tempoOrdenacao + tempoBuscaBinaria));
-        System.out.println("==========================================================");
-
-        System.out.println("PASSO 4 & 5: BUSCA EM TABELA HASH (HashMap)");
-
-        long inicioCriacaoHash = System.nanoTime();
-        HashMap<Integer, Integer> mapa = new HashMap<>();
-        for (int elemento : arrayA) {
-            mapa.put(elemento, elemento);
+        startTime = System.nanoTime();
+        for (int number : randomNumbers) {
+            hashMap.put(number, number);
         }
-        long tempoCriacaoHash = System.nanoTime() - inicioCriacaoHash;
+        endTime = System.nanoTime();
+        long hashInsertionTime = (endTime - startTime) / 1_000_000;
+        System.out.println("Tabela Hash (HashMap): " + hashInsertionTime + " ms para inserir " + String.format("%,d", actualElements) + " elementos.");
+        System.out.println("------------------------------------------------------");
 
-        long inicioBuscaHash = System.nanoTime();
-        boolean encontradoHash = mapa.containsKey(x);
-        long tempoBuscaHash = System.nanoTime() - inicioBuscaHash;
+        System.out.println("\n--- Teste de Busca ---");
 
-        System.out.println("Elemento X " + (encontradoHash ? "encontrado." : "NÃO encontrado."));
-        System.out.printf("Tempo de inserção dos elementos na Tabela Hash: %d nanossegundos (%d microssegundos)\n",
-                tempoCriacaoHash, TimeUnit.NANOSECONDS.toMicros(tempoCriacaoHash));
-        System.out.printf("Tempo de execução da busca na Tabela Hash: %d nanossegundos (%d microssegundos)\n",
-                tempoBuscaHash, TimeUnit.NANOSECONDS.toMicros(tempoBuscaHash));
-        System.out.println("==========================================================");
-    }
-
-    public static boolean buscaLinear(int[] array, int alvo) {
-        for (int elemento : array) {
-            if (elemento == alvo) {
-                return true;
+        long avlSearchCount = 0;
+        startTime = System.nanoTime();
+        for (int number : randomNumbers) {
+            if (avlTree.search(number) != null) {
+                avlSearchCount++;
             }
         }
-        return false;
+        endTime = System.nanoTime();
+        long avlSearchTime = (endTime - startTime) / 1_000_000;
+        System.out.println("Árvore AVL: " + avlSearchTime + " ms para buscar " + String.format("%,d", avlSearchCount) + " elementos.");
+
+        long hashSearchCount = 0;
+        startTime = System.nanoTime();
+        for (int number : randomNumbers) {
+            if (hashMap.get(number) != null) {
+                hashSearchCount++;
+            }
+        }
+        endTime = System.nanoTime();
+        long hashSearchTime = (endTime - startTime) / 1_000_000;
+        System.out.println("Tabela Hash (HashMap): " + hashSearchTime + " ms para buscar " + String.format("%,d", hashSearchCount) + " elementos.");
+        System.out.println("------------------------------------------------------");
     }
 
 }
